@@ -33,7 +33,6 @@ This project implements a state-of-the-art AI agent that learns to play Dots and
 1. **Clone the repository**:
    ```bash
    git clone https://github.com/SanketRt/dabi.git
-   cd dots-and-boxes-ai
    ```
 
 2. **Install dependencies**:
