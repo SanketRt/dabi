@@ -161,15 +161,13 @@ class DotsAndBoxesGUI:
                     
                     color = self.colors['player1_box'] if self.env.box_owners[i, j] == 0 else self.colors['player2_box']
                     
-                    self.canvas.create_rectangle(x1, y1, x2, y2, fill=color, outline='', 
-                                               stipple='gray25', tags=f"box_{i}_{j}")
+                    self.canvas.create_rectangle(x1, y1, x2, y2, fill=color, outline='', stipple='gray25', tags=f"box_{i}_{j}")
                     
                     # Add player number in the center
                     center_x = (x1 + x2) / 2
                     center_y = (y1 + y2) / 2
                     player_num = self.env.box_owners[i, j] + 1
-                    self.canvas.create_text(center_x, center_y, text=str(player_num), 
-                                          font=("Arial", 16, "bold"), fill='white')
+                    self.canvas.create_text(center_x, center_y, text=str(player_num), font=("Arial", 16, "bold"), fill='white')
     
     def highlight_last_move(self, action):
         """Highlight the last move made"""
