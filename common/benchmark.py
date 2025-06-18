@@ -4,9 +4,9 @@ from tqdm import tqdm
 import time
 import os
 from collections import defaultdict
-
-from environment import DotsAndBoxesEnv
-from agent import DQNAgent, RandomAgent
+from common.environment import DotsAndBoxesEnv
+from dqn.dqn_agent import DQNAgent
+from common.agent import RandomAgent
 
 class GameBenchmark:
     """Benchmark class for comparing agent performance"""

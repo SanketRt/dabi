@@ -7,35 +7,31 @@ import argparse
 import os
 import sys
 
-from environment import DotsAndBoxesEnv
-from agent import DQNAgent, RandomAgent
-from benchmark import GameBenchmark
-from gui import DotsAndBoxesGUI
-from utils import analyze_reward_structure, validate_environment
+from common.environment import DotsAndBoxesEnv
+from dqn.dqn_agent import DQNAgent 
+from common.agent import RandomAgent
+from ppo.ppo_agent import PPOAgent
+from common.benchmark import GameBenchmark
+from common.gui import DotsAndBoxesGUI
+from common.utils import analyze_reward_structure, validate_environment
 
 def train_agent(grid_size=3, episodes=3000, lr=5e-4, save_path=None):
     """Train a new DQN agent"""
     print(f"Training DQN agent on {grid_size}x{grid_size} grid for {episodes} episodes")
-    
-    # Analyze reward structure first
     analyze_reward_structure(grid_size)
     
-    # Create environment and agent
     env = DotsAndBoxesEnv(grid_size=grid_size)
     agent = DQNAgent(env, lr=lr, gamma=0.95, epsilon=1.0, epsilon_decay=0.995, epsilon_min=0.01)
     
-    # Train the agent
     print(f"\nStarting training...")
     agent.train(episodes=episodes, target_update_freq=50, evaluation_freq=100)
     
-    # Save the trained model
     if save_path is None:
-        save_path = f'trained_model_grid{grid_size}.pth'
+        save_path = f'dqn_model_{grid_size}x{grid_size}.pth'
     
     agent.save_model(save_path)
     print(f"\nModel saved to {save_path}")
     
-    # Final evaluation
     print("\n=== Final Evaluation ===")
     results = agent.evaluate(num_games=200, render_first=3)
     
@@ -44,7 +40,6 @@ def train_agent(grid_size=3, episodes=3000, lr=5e-4, save_path=None):
     print(f"Average Reward: {results['avg_reward']:.2f} ± {results['reward_std']:.2f}")
     print(f"Average Game Length: {results['avg_game_length']:.1f} moves")
     
-    # Plot training progress
     agent.plot_training_progress()
     
     return agent
@@ -79,12 +74,11 @@ def run_gui_demo(grid_size=3, model_path=None):
     env = DotsAndBoxesEnv(grid_size)
     gui = DotsAndBoxesGUI(grid_size)
     
-    # Set up agents
     if model_path and os.path.exists(model_path):
         print(f"Loading DQN agent from {model_path}")
         dqn_agent = DQNAgent(env)
         dqn_agent.load_model(model_path)
-        dqn_agent.epsilon = 0  # No exploration
+        dqn_agent.epsilon = 0  
         agent1 = dqn_agent
     else:
         print("Using random agent for Player 1")
@@ -108,7 +102,6 @@ def run_benchmark(grid_size=3, model_path=None):
     """Run comprehensive benchmarking"""
     benchmark = GameBenchmark(grid_size)
     
-    # Create agents
     env = DotsAndBoxesEnv(grid_size)
     random_agent = RandomAgent(env)
     
@@ -118,10 +111,8 @@ def run_benchmark(grid_size=3, model_path=None):
         dqn_agent.load_model(model_path)
         dqn_agent.epsilon = 0
         
-        # Benchmark DQN vs Random
         benchmark.benchmark_vs_random(dqn_agent, num_games=200, agent_name="DQN")
         
-        # DQN self-play
         benchmark.benchmark_self_play(dqn_agent, num_games=100, agent_name="DQN")
     else:
         print("No DQN model provided, running random vs random")
@@ -129,10 +120,8 @@ def run_benchmark(grid_size=3, model_path=None):
     # Random vs Random baseline
     env2 = DotsAndBoxesEnv(grid_size)
     random_agent2 = RandomAgent(env2)
-    benchmark.run_tournament(random_agent, random_agent2, num_games=200, 
-                           agent1_name="Random_A", agent2_name="Random_B")
+    benchmark.run_tournament(random_agent, random_agent2, num_games=200, agent1_name="Random_A", agent2_name="Random_B")
     
-    # Plot and save results
     benchmark.plot_results()
     benchmark.save_results()
     
@@ -148,24 +137,17 @@ def main():
     mode_group.add_argument("--gui", action="store_true", help="Run GUI demonstration")
     mode_group.add_argument("--benchmark", action="store_true", help="Run benchmarking")
     mode_group.add_argument("--validate", action="store_true", help="Validate environment")
+    mode_group.add_argument("--train-ppo", action="store_true", help="Train a PPO agent")
+    mode_group.add_argument("--benchmark-ppo", action="store_true", help="Benchmark PPO vs other agents")
+
+    parser.add_argument("--grid-size",type=int,default=3,choices=[2, 3, 4, 5],help="Grid size for the game (default: 3)")
+    parser.add_argument("--model-path",type=str,help="Path to model file (for evaluate/gui/benchmark modes)")
     
-    # Common arguments
-    parser.add_argument("--grid-size", type=int, default=3, choices=[2, 3, 4, 5],
-                       help="Grid size for the game (default: 3)")
-    parser.add_argument("--model-path", type=str, 
-                       help="Path to model file (for evaluate/gui/benchmark modes)")
+    parser.add_argument("--episodes",type=int,default=3000,help="Number of training episodes (default: 3000)")
+    parser.add_argument("--lr",type=float,default=5e-4,help="Learning rate (default: 5e-4)")
+    parser.add_argument("--save-path",type=str,help="Path to save trained model")
     
-    # Training arguments
-    parser.add_argument("--episodes", type=int, default=3000,
-                       help="Number of training episodes (default: 3000)")
-    parser.add_argument("--lr", type=float, default=5e-4,
-                       help="Learning rate (default: 5e-4)")
-    parser.add_argument("--save-path", type=str,
-                       help="Path to save trained model")
-    
-    # Evaluation arguments
-    parser.add_argument("--num-games", type=int, default=100,
-                       help="Number of games for evaluation (default: 100)")
+    parser.add_argument("--num-games",type=int,default=100,help="Number of games for evaluation (default: 100)")
     
     args = parser.parse_args()
     

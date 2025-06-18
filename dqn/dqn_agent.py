@@ -349,24 +349,3 @@ class DQNAgent:
         plt.tight_layout()
         plt.savefig(f'training_progress_grid{self.env.grid_size}.png', dpi=300, bbox_inches='tight')
         plt.show()
-
-class RandomAgent:
-    """Random agent for benchmarking"""
-    def __init__(self, env):
-        self.env = env
-    
-    def act(self, state, valid_actions, training=True):
-        """Randomly select from valid actions"""
-        return random.choice(valid_actions)
-    
-    def remember(self, state, action, reward, next_state, done):
-        """No learning for random agent"""
-        pass
-    
-    def save_model(self, filename):
-        """No model to save"""
-        pass
-    
-    def load_model(self, filename):
-        """No model to load"""
-        pass

@@ -2,7 +2,7 @@ import numpy as np
 
 def analyze_reward_structure(grid_size=5):
     """Analyze expected rewards for the given grid size"""
-    from environment import DotsAndBoxesEnv
+    from common.environment import DotsAndBoxesEnv
     env = DotsAndBoxesEnv(grid_size=grid_size)
     
     print(f"=== Reward Analysis for {grid_size}x{grid_size} Grid ===")
@@ -75,7 +75,7 @@ def validate_environment():
     """Test the environment implementation"""
     print("Validating Dots and Boxes Environment...")
     
-    from environment import DotsAndBoxesEnv
+    from common.environment import DotsAndBoxesEnv
     
     # Test different grid sizes
     for grid_size in [2, 3, 4]:

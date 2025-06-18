@@ -8,11 +8,11 @@ from tkinter import ttk, messagebox, filedialog
 import os
 import sys
 from pathlib import Path
-
-# Import your modules
-from gui import DotsAndBoxesGUI
-from agent import DQNAgent, RandomAgent
-from environment import DotsAndBoxesEnv
+from common.gui import DotsAndBoxesGUI
+from dqn.dqn_agent import DQNAgent 
+from common.agent import RandomAgent
+from ppo.ppo_agent import PPOAgent
+from common.environment import DotsAndBoxesEnv
 
 class AgentMatchupGUI:
     """GUI for setting up and watching agent matchups"""
@@ -35,15 +35,13 @@ class AgentMatchupGUI:
         main_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
         
         # Title
-        title_label = ttk.Label(main_frame, text="Dots and Boxes Agent Matchup", 
-                               font=("Arial", 16, "bold"))
+        title_label = ttk.Label(main_frame,text="Dots and Boxes Agent Matchup",font=("Arial", 16, "bold"))
         title_label.grid(row=0, column=0, columnspan=2, pady=(0, 20))
         
         # Grid size selection
-        ttk.Label(main_frame, text="Grid Size:").grid(row=1, column=0, sticky=tk.W, pady=5)
+        ttk.Label(main_frame, text="Grid Size:").grid(row=1,column=0,sticky=tk.W, pady=5)
         self.grid_size_var = tk.StringVar(value="3")
-        grid_combo = ttk.Combobox(main_frame, textvariable=self.grid_size_var, 
-                                 values=["2", "3", "4", "5"], state="readonly", width=10)
+        grid_combo = ttk.Combobox(main_frame, textvariable=self.grid_size_var, values=["2", "3", "4", "5"], state="readonly", width=10)
         grid_combo.grid(row=1, column=1, sticky=tk.W, pady=5)
         
         # Model file selection
@@ -63,14 +61,11 @@ class AgentMatchupGUI:
         # Player assignment
         ttk.Label(main_frame, text="Player Assignment:").grid(row=3, column=0, sticky=tk.W, pady=5)
         self.player_assignment_var = tk.StringVar(value="DQN vs Random")
-        assignment_combo = ttk.Combobox(main_frame, textvariable=self.player_assignment_var,
-                                       values=["DQN vs Random", "Random vs DQN"], 
-                                       state="readonly", width=15)
+        assignment_combo = ttk.Combobox(main_frame, textvariable=self.player_assignment_var,values=["DQN vs Random", "Random vs DQN"],state="readonly", width=15)
         assignment_combo.grid(row=3, column=1, sticky=tk.W, pady=5)
         
         # Auto-detect models
-        ttk.Separator(main_frame, orient='horizontal').grid(row=4, column=0, columnspan=2, 
-                                                           sticky=(tk.W, tk.E), pady=10)
+        ttk.Separator(main_frame, orient='horizontal').grid(row=4, column=0, columnspan=2,sticky=(tk.W, tk.E), pady=10)
         
         ttk.Label(main_frame, text="Auto-detect Models:").grid(row=5, column=0, sticky=tk.W, pady=5)
         
@@ -86,22 +81,19 @@ class AgentMatchupGUI:
         button_frame = ttk.Frame(main_frame)
         button_frame.grid(row=8, column=0, columnspan=2, pady=20)
         
-        self.start_button = ttk.Button(button_frame, text="Start Game Viewer", 
-                                      command=self.start_game_viewer)
-        self.start_button.pack(side=tk.LEFT, padx=5)
+        self.start_button = ttk.Button(button_frame,text="Start Game Viewer",command=self.start_game_viewer)
+        self.start_button.pack(side=tk.LEFT,padx=5)
         
-        self.evaluate_button = ttk.Button(button_frame, text="Quick Evaluation", 
-                                         command=self.quick_evaluation)
-        self.evaluate_button.pack(side=tk.LEFT, padx=5)
+        self.evaluate_button = ttk.Button(button_frame,text="Quick Evaluation",command=self.quick_evaluation)
+        self.evaluate_button.pack(side=tk.LEFT,padx=5)
         
         quit_button = ttk.Button(button_frame, text="Quit", command=self.root.quit)
         quit_button.pack(side=tk.LEFT, padx=5)
         
         # Status bar
         self.status_var = tk.StringVar(value="Ready - Select a model and start game viewer")
-        status_label = ttk.Label(main_frame, textvariable=self.status_var, 
-                                relief=tk.SUNKEN, padding="5")
-        status_label.grid(row=9, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=(10, 0))
+        status_label = ttk.Label(main_frame, textvariable=self.status_var,relief=tk.SUNKEN, padding="5")
+        status_label.grid(row=9,column=0,columnspan=2,sticky=(tk.W, tk.E),pady=(10, 0))
         
         # Configure grid weights
         main_frame.columnconfigure(1, weight=1)
@@ -115,7 +107,7 @@ class AgentMatchupGUI:
         """Browse for a model file"""
         filename = filedialog.askopenfilename(
             title="Select Trained Model",
-            filetypes=[("PyTorch Model", "*.pth"), ("All Files", "*.*")]
+            filetypes=[("PyTorch Model", "*.pth"),("All Files", "*.*")]
         )
         if filename:
             self.model_path_var.set(filename)

@@ -3,7 +3,7 @@ from tkinter import ttk, messagebox
 import threading
 import time
 import numpy as np
-from environment import DotsAndBoxesEnv
+from common.environment import DotsAndBoxesEnv
 
 class DotsAndBoxesGUI:
     """GUI for visualizing Dots and Boxes games"""
@@ -184,15 +184,13 @@ class DotsAndBoxesGUI:
             x2 = (j + 1) * self.cell_size + self.cell_size // 2 - self.dot_radius
             y = i * self.cell_size + self.cell_size // 2
             
-            self.canvas.create_line(x1, y, x2, y, fill=self.colors['highlight'], 
-                                  width=self.edge_width + 2, tags="highlight")
+            self.canvas.create_line(x1, y, x2, y, fill=self.colors['highlight'], width=self.edge_width + 2, tags="highlight")
         else:  # vertical
             x = j * self.cell_size + self.cell_size // 2
             y1 = i * self.cell_size + self.cell_size // 2 + self.dot_radius
             y2 = (i + 1) * self.cell_size + self.cell_size // 2 - self.dot_radius
             
-            self.canvas.create_line(x, y1, x, y2, fill=self.colors['highlight'], 
-                                  width=self.edge_width + 2, tags="highlight")
+            self.canvas.create_line(x, y1, x, y2, fill=self.colors['highlight'], width=self.edge_width + 2, tags="highlight")
     
     def update_display(self, last_action=None):
         """Update the game display"""
@@ -330,7 +328,7 @@ class DotsAndBoxesGUI:
 
 def demo_gui():
     """Demo function to show the GUI with random agents"""
-    from agent import RandomAgent
+    from common.agent import RandomAgent
     
     grid_size = 3
     gui = DotsAndBoxesGUI(grid_size)

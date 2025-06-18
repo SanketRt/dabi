@@ -13,7 +13,6 @@ from datetime import datetime
 from pathlib import Path
 import numpy as np
 
-# Try to import required packages
 try:
     import PIL
     from PIL import Image, ImageTk, ImageGrab
@@ -27,10 +26,11 @@ try:
 except ImportError:
     CV2_AVAILABLE = False
 
-# Import your modules
-from gui import DotsAndBoxesGUI
-from agent import DQNAgent, RandomAgent
-from environment import DotsAndBoxesEnv
+from common.gui import DotsAndBoxesGUI
+from dqn.dqn_agent import DQNAgent 
+from common.agent import RandomAgent
+from ppo.ppo_agent import PPOAgent
+from common.environment import DotsAndBoxesEnv
 
 class GIFRecorderGUI(DotsAndBoxesGUI):
     """Extended DotsAndBoxesGUI with GIF recording capabilities"""
