@@ -1,0 +1,37 @@
+Dots and Boxes Benchmark Results
+Grid Size: 5x5
+==================================================
+
+Match: DQN vs Random
+------------------------------
+Total Games: 200
+Agent 1 Wins: 196 (98.0%)
+Agent 2 Wins: 4 (2.0%)
+Draws: 0 (0.0%)
+Average Game Length: 60.0 moves
+Average Execution Time: 0.020s
+Average Scores - Agent 1: 20.7, Agent 2: 4.3
+First Move Advantage: 51.0%
+
+Match: DQN_P1 vs DQN_P2
+------------------------------
+Total Games: 100
+Agent 1 Wins: 50 (50.0%)
+Agent 2 Wins: 50 (50.0%)
+Draws: 0 (0.0%)
+Average Game Length: 60.0 moves
+Average Execution Time: 0.028s
+Average Scores - Agent 1: 12.5, Agent 2: 12.5
+First Move Advantage: 0.0%
+
+Match: Random_A vs Random_B
+------------------------------
+Total Games: 200
+Agent 1 Wins: 101 (50.5%)
+Agent 2 Wins: 99 (49.5%)
+Draws: 0 (0.0%)
+Average Game Length: 60.0 moves
+Average Execution Time: 0.003s
+Average Scores - Agent 1: 12.2, Agent 2: 12.8
+First Move Advantage: 49.5%
+
