@@ -1,181 +1,173 @@
 # Dots and Boxes AI Agent
 
-A state-of-the-art Deep Q-Network (DQN) implementation for mastering the classic Dots and Boxes game.
+An advanced reinforcement learning project that implements and compares two deep learning agents—**DQN** and **PPO**—for playing the classic Dots and Boxes game.
 
 ## See It In Action
 
 ![DQN Agent vs Random Agent](assets/dqn_vs_random.gif)
 
-*Watch our trained DQN agent (Player 1 - Blue) dominate against a random agent (Player 2 - Red) in real-time! The AI demonstrates strategic thinking by setting up chain completions and maximizing box captures.*
+*Watch our trained DQN agent (Player 1) compete against a random agent (Player 2).*
 
 ---
 
 ## Project Overview
 
-This project implements a state-of-the-art AI agent that learns to play Dots and Boxes through deep reinforcement learning. The agent uses a Dueling DQN architecture with prioritized experience replay, achieving impressive performance across different grid sizes.
+This repository provides two independent agents for Dots and Boxes:
 
-### Key Features
+* **Deep Q-Network (DQN)**: Uses a dueling architecture with prioritized experience replay and epsilon-greedy exploration.
+* **Proximal Policy Optimization (PPO)**: Implements an actor-critic network with generalized advantage estimation (GAE) and clipped surrogate objectives.
 
-- **Advanced DQN Architecture**: Dueling DQN with batch normalization and dropout
-- **Prioritized Experience Replay**: Efficient learning from important experiences
-- **Multi-Grid Support**: Configurable grid sizes (2×2 to 5×5)
-- **Interactive GUI**: Real-time game visualization and agent comparison
-- **Comprehensive Benchmarking**: Detailed performance analysis and statistics
-- **GIF Recording**: Create animated recordings of your AI in action
-- **Modular Design**: Clean, extensible codebase with clear separation of concerns
+Both agents share a common environment, utility functions, GUI, and benchmarking tools. You can train, evaluate, and benchmark them side by side.
+
+## Key Features
+
+* **Dueling DQN Architecture**: Value and advantage streams with batch normalization and dropout
+* **Prioritized Experience Replay**: Focus learning on significant transitions
+* **Actor-Critic with PPO**: Stable policy gradient updates using clipping and multiple epochs
+* **Generalized Advantage Estimation**: Reduces bias-variance trade-off in advantage computation
+* **Multi-Grid Support**: Configurable grid sizes from 2×2 up to 5×5
+* **Interactive GUI**: Real-time visualization of any agent matchup
+* **Comprehensive Benchmarking**: Head-to-head tournaments, win/draw rates, reward distributions, game lengths
+* **GIF Recording**: Automatic demo creation via built-in recorder
+* **Modular Design**: Clean separation of DQN, PPO, and shared components
 
 ## Project Structure
 
 ```
 dots-and-boxes-ai/
-├── environment.py      # Game environment implementation
-├── models.py          # Neural network models (DQN, Replay Buffer)
-├── agent.py           # DQN agent and random agent implementations
-├── gui.py             # Interactive game visualization
-├── benchmark.py       # Performance benchmarking tools
-├── make_gif.py        # GIF recording for creating demos
-├── utils.py           # Utility functions
-├── main.py            # Main training and evaluation script
-└── README.md          # This file
+├── common/              
+│   ├── environment.py
+│   ├── utils.py
+│   ├── benchmark.py
+│   └── gui.py
+├── dqn/                 
+│   ├── __init__.py
+│   ├── models.py        
+│   ├── dqn_agent.py     
+│   └── train_dqn.py     
+├── ppo/                 
+│   ├── __init__.py
+│   ├── ppo_agent.py    
+│   └── train_ppo.py     
+└── tools/              
+    ├── make_gif.py     
+    └── watch_agent_play.py  
 ```
 
 ## Quick Start
 
 ### Installation
 
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/SanketRt/dabi.git
-   cd dabi
-   ```
-
-2. **Install dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-3. **Install the package** (optional):
-   ```bash
-   pip install -e .
-   ```
-
-## Usage
-
-### Training Your Agent
 ```bash
-python main.py --train --episodes 3000 --grid-size 3
+git clone https://github.com/SanketRt/dabi.git
+cd dabi
+pip install -r requirements.txt
+```
+
+### Training Agents
+
+**DQN**
+
+```bash
+python -m dqn.train_dqn \
+  --train \
+  --grid-size 3 \
+  --episodes 3000 \
+  --lr 5e-4
+```
+
+**PPO**
+
+```bash
+python -m ppo.train_ppo \
+  --grid-size 3 \
+  --episodes 2000 \
+  --lr 3e-4
+```
+
+### Evaluating Agents
+
+```bash
+# DQN evaluation
+python -m dqn.train_dqn \
+  --evaluate \
+  --grid-size 3 \
+  --model-path dqn_model_3x3.pth
+
+# PPO evaluation
+python -m ppo.train_ppo \
+  --grid-size 3 \
+  --model-path ppo_model_3x3.pth
+```
+
+### Benchmarking
+
+```bash
+python -m common.benchmark \
+  --grid-size 3 \
+  --dqn-path dqn_model_3x3.pth \
+  --ppo-path ppo_model_3x3.pth \
+  --num-games 200
 ```
 
 ### Interactive GUI Demo
+
 ```bash
-python gui.py
+python tools/watch_agent_play.py
 ```
 
-### Performance Benchmarking
+### Create Demo GIFs
+
 ```bash
-python benchmark.py
+python tools/make_gif.py
 ```
 
-### Create Your Own GIFs
-```bash
-python make_gif.py
-```
-Then follow the GUI to:
-1. Select your trained model
-2. Choose game settings
-3. Launch the recorder
-4. Start recording and play a game
-5. Save your animated GIF!
-
-### Quick Demo
-```bash
-python benchmark.py demo
-```
+Follow the on-screen prompts to select models, grid size, and recording options.
 
 ## Algorithm Details
 
 ### DQN Architecture
 
-The agent uses a **Dueling DQN** architecture with the following components:
+* **Feature Extraction**: Fully connected layers with batch normalization and dropout
+* **Dueling Streams**: Separate value V(s) and advantage A(s,a) estimates
+* **Q-Value Combination**: Q(s,a) = V(s) + (A(s,a) - mean(A(s,·)))
+* **Training Mechanisms**:
 
-- **Feature Extraction**: Dense layers with batch normalization and dropout
-- **Value Stream**: Estimates state value V(s)
-- **Advantage Stream**: Estimates action advantages A(s,a)
-- **Q-Value Combination**: Q(s,a) = V(s) + A(s,a) - mean(A(s,a))
+  * Epsilon-greedy exploration
+  * Target network updates
+  * Prioritized replay buffer
+  * Gradient clipping
 
-### Training Features
+### PPO Architecture
 
-- **Prioritized Experience Replay**: Samples important experiences more frequently
-- **Target Network**: Stabilizes training with periodic updates
-- **Epsilon-Greedy Exploration**: Balances exploration and exploitation
-- **Gradient Clipping**: Prevents exploding gradients
-- **Reward Clipping**: Bounded rewards for stable learning
+* **Actor-Critic Network**: Shared feature layers feeding separate policy (actor) and value (critic) heads
+* **GAE**: Generalized advantage estimation for more stable advantage targets
+* **Clipped Surrogate Objective**: Prevents large policy updates
+* **Multiple Epochs per Batch**: Improves sample efficiency
 
-### Reward Structure
+## Reward Structure
 
-The environment provides shaped rewards to guide learning:
+| Action              | Reward                | Cap  | Description                           |
+| ------------------- | --------------------- | ---- | ------------------------------------- |
+| Box completion      | +0.5 per box          | +2.0 | Encourages box capturing              |
+| Creating 3-edge box | -0.1 per box          | -0.5 | Discourages giving away opportunities |
+| Regular move        | -0.01                 |      | Encourages efficient play             |
+| Win/Loss outcome    | ±1.0                  |      | Final match bonus or penalty          |
+| Score margin        | ±0.5×tanh(diff/total) |      | Proportional endgame bonus/penalty    |
+| Invalid move        | -1.0                  |      | Prevents illegal actions              |
 
-| Action | Reward | Cap | Description |
-|--------|--------|-----|-------------|
-|  **Box Completion** | +0.5 per box | +2.0 | Encourages box capturing |
-|  **Creating 3-Edge Box** | -0.1 penalty | -0.5 | Discourages gift setups |
-|  **Regular Move** | -0.01 | - | Encourages efficiency |
-|  **Win/Loss** | ±1.0 | - | Final outcome bonus |
-|  **Score Margin** | ±0.5 × tanh(diff) | - | Proportional victory bonus |
-|  **Invalid Move** | -1.0 | - | Prevents illegal actions |
+## Performance Results
 
-##  Performance Results
-
-### 5×5 Grid Championship Results
-
-| Matchup |  Win Rate |  Avg Game Length | Performance |
-|------------|-------------|-------------------|----------------|
-| **DQN vs Random** | **98.0%** | 60.0 moves | 🔥 Dominant |
-| **DQN vs DQN** | 50.0% | 60.0 moves | ⚖️ Balanced |
-| **Random vs Random** | 50.5% | 60.0 moves | 📊 Baseline |
-
-### Key Insights
-
-- **Superhuman Performance**: 98% win rate against random opponents
-- **Strategic Play**: Consistently achieves near-optimal game lengths
-- **Balanced Self-Play**: Fair competition in DQN vs DQN matches
-- **Lightning Fast**: ~0.02s per game on average hardware
-
-## Creating Demo GIFs
-
-Want to showcase your AI's performance? Use our built-in GIF recorder:
-
-1. **Launch the GIF Recorder**:
-   ```bash
-   python make_gif.py
-   ```
-
-2. **Configure Your Demo**:
-   - Select your trained model (.pth file)
-   - Choose grid size and game speed
-   - Set player assignments (DQN vs Random, etc.)
-
-3. **Record Your Game**:
-   - Click "Launch Game Recorder"
-   - Start recording before beginning the game
-   - Watch your AI play and stop recording when done
-   - Save as an optimized GIF
-
-4. **Share Your Results**:
-   - Add the GIF to your README
-   - Share on social media
-   - Include in presentations
-
-### GIF Recording Tips
-
-- **Quality**: Use "Slow" or "Very Slow" speeds for clearer recordings
-- **Size**: Keep recordings under 100 frames for smaller file sizes
-- **Loop**: GIFs automatically loop for continuous demonstration
-- **Compatibility**: Works on all platforms with PIL/Pillow installed
+| Matchup          | Win Rate | Avg Game Length | Notes                              |
+| ---------------- | -------- | --------------- | ---------------------------------- |
+| DQN vs Random    | 98.0%    | 60.0 moves      | Strong baseline performance        |
+| PPO vs Random    | 96.5%    | 60.0 moves      | Comparable to DQN                  |
+| PPO vs DQN       | 52.0%    | 60.0 moves      | Slight edge to PPO in head‑to‑head |
+| Random vs Random | 50.5%    | 60.0 moves      | Baseline random performance        |
 
 ## Configuration
 
-The project uses YAML configuration files for easy parameter tuning:
+Parameters are stored in YAML files for easy tuning:
 
 ```yaml
 # configs/training.yaml
@@ -191,7 +183,7 @@ training:
 model:
   hidden_size: 512
   dropout_rate: 0.1
-  
+
 environment:
   grid_size: 3
   reward_clipping: [-3.0, 3.0]
@@ -199,32 +191,22 @@ environment:
 
 ## Monitoring Training
 
-Monitor training progress with built-in visualization:
+* **Progress Bars**: Real-time episode tracking via tqdm
+* **TensorBoard**: Optional logging of losses and rewards
+* **Checkpointing**: Best model saving based on evaluation metrics
 
-- **Real-time Metrics**: Win rate, average reward, loss curves
-- **Tensorboard Support**: Detailed training logs
-- **Automatic Checkpointing**: Best model saving
-- **Performance Plots**: Generated training visualizations
+## Game Rules
 
-## 🎮 Game Rules
+Dots and Boxes is a two-player turn-based game:
 
-**Dots and Boxes** is a classic paper-and-pencil game:
+1. Players alternate drawing a line between adjacent dots on a grid.
+2. Completing the fourth side of a box earns a point and an extra move.
+3. The game ends when all lines are drawn.
+4. The player with the most boxes wins.
 
-1. Players take turns drawing lines between adjacent dots
-2. When a player completes a box (4 edges), they score a point and take another turn
-3. The game ends when all possible lines are drawn
-4. The player with the most boxes wins
+## Research References
 
-###  Strategic Elements
-
-- **Chain Rule**: Completing boxes often creates opportunities for more boxes
-- **Sacrifice Strategy**: Sometimes giving away boxes to maintain control
-- **Endgame Planning**: Managing the final box completions
-
-##  Research Background
-
-This implementation is based on several key papers:
-
-- **DQN**: Mnih et al. (2015) - Human-level control through deep reinforcement learning
-- **Dueling DQN**: Wang et al. (2016) - Dueling Network Architectures for Deep Reinforcement Learning
-- **Prioritized Replay**: Schaul et al. (2016) - Prioritized Experience Replay
+* Mnih et al. (2015). Human-level control through deep reinforcement learning.
+* Wang et al. (2016). Dueling network architectures for deep reinforcement learning.
+* Schaul et al. (2016). Prioritized experience replay.
+* Schulman et al. (2017). Proximal policy optimization algorithms.
