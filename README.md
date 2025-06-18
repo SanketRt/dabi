@@ -4,7 +4,7 @@ A state-of-the-art Deep Q-Network (DQN) implementation for mastering the classic
 
 ## 🎮 See It In Action
 
-![DQN Agent vs Random Agent](assets/dqn_vs_random_demo.gif)
+![DQN Agent vs Random Agent](assets/dqn_vs_random.gif)
 
 *Watch our trained DQN agent (Player 1 - Blue) dominate against a random agent (Player 2 - Red) in real-time! The AI demonstrates strategic thinking by setting up chain completions and maximizing box captures.*
 
